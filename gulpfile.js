@@ -54,6 +54,7 @@ gulp.task("copy-assets", () => {
 gulp.task("watch", () => {
     browsersync.init({
         server: {
+            proxy: "bringitup.local",          
             baseDir: "./dist/",
             serveStaticOptions: {
                 extensions: ["html"]
