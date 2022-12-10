@@ -931,10 +931,14 @@ module.exports = g;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_slider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/slider */ "./src/js/modules/slider.js");
+/* harmony import */ var _modules_videoPopup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/videoPopup */ "./src/js/modules/videoPopup.js");
+
 
 window.addEventListener("DOMContentLoaded", function () {
   var slider = new _modules_slider__WEBPACK_IMPORTED_MODULE_0__["default"]('.next', '.page');
   slider.render();
+  var videoPopup = new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_1__["default"]('.play', '.overlay');
+  videoPopup.init();
 });
 
 /***/ }),
@@ -962,18 +966,22 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var Slider =
 /*#__PURE__*/
 function () {
-  function Slider(triggersSelector, wrapperSelector) {
+  function Slider(triggersSelector, wrapperSelector, teacherSelector) {
     _classCallCheck(this, Slider);
 
     this.btns = document.querySelectorAll(triggersSelector);
     this.wrapper = document.querySelector(wrapperSelector);
     this.slides = this.wrapper.children;
     this.sliderIndex = 1;
-  }
+    this.logo = document.querySelectorAll(".original_logo");
+  } // show small teacher
+
 
   _createClass(Slider, [{
     key: "showSlide",
     value: function showSlide(n) {
+      var _this = this;
+
       if (n > this.slides.length) {
         this.sliderIndex = 1;
       }
@@ -983,10 +991,30 @@ function () {
       }
 
       this.slides.forEach(function (slide) {
-        slide.classList.add("fadeIn", "animated");
+        slide.classList.add("fadeInDown", "animated");
+        slide.style.opacity = "0";
+        slide.style.transition = "all .6s ease";
         slide.style.display = "none";
       });
+      this.slides[this.sliderIndex - 1].style.opacity = "1";
       this.slides[this.sliderIndex - 1].style.display = "block";
+
+      try {
+        this.teacher = document.querySelector(".hanson");
+        this.teacher.classList.add("animated");
+        this.teacher.style.opacity = "0";
+
+        if (this.slides[this.sliderIndex - 1].classList.contains("modules")) {
+          setTimeout(function () {
+            _this.teacher.style.opacity = "1";
+
+            _this.teacher.classList.add('fadeInUp');
+          }, 3000);
+        } else {
+          this.teacher.style.opacity = "0";
+          this.teacher.classList.remove('fadeInDown');
+        }
+      } catch (error) {}
     }
   }, {
     key: "plusIndex",
@@ -996,13 +1024,22 @@ function () {
   }, {
     key: "render",
     value: function render() {
-      var _this = this;
+      var _this2 = this;
 
       this.btns.forEach(function (btn) {
         btn.addEventListener("click", function (e) {
           e.preventDefault();
 
-          _this.plusIndex(1);
+          _this2.plusIndex(1);
+        });
+      });
+      this.logo.forEach(function (el) {
+        el.addEventListener("click", function (e) {
+          e.preventDefault(); // console.log('ss');
+
+          _this2.sliderIndex = 1;
+
+          _this2.showSlide(_this2.sliderIndex);
         });
       });
       this.showSlide(this.sliderIndex);
@@ -1010,6 +1047,99 @@ function () {
   }]);
 
   return Slider;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/modules/videoPopup.js":
+/*!**************************************!*\
+  !*** ./src/js/modules/videoPopup.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return VideoPopup; });
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var VideoPopup =
+/*#__PURE__*/
+function () {
+  function VideoPopup(triggerSelector, popupWrapper) {
+    _classCallCheck(this, VideoPopup);
+
+    this.trigger = document.querySelectorAll(triggerSelector);
+    this.popupWrapper = document.querySelector(popupWrapper);
+    this.close = this.popupWrapper.querySelector(".close");
+  }
+
+  _createClass(VideoPopup, [{
+    key: "\u0441reatePlayer",
+    value: function reatePlayer(url) {
+      this.player = new YT.Player("frame", {
+        height: "360",
+        width: "640",
+        videoId: "".concat(url)
+      });
+      this.popupWrapper.style.display = "flex";
+    }
+  }, {
+    key: "bindPlayer",
+    value: function bindPlayer() {
+      var _this = this;
+
+      this.trigger.forEach(function (btn) {
+        btn.addEventListener("click", function (ev) {
+          _this.iframe = document.createElement("div");
+
+          _this.iframe.setAttribute("id", "frame");
+
+          _this.popupWrapper.firstElementChild.appendChild(_this.iframe);
+
+          _this.popupWrapper.style.display = "flex";
+
+          _this.сreatePlayer(btn.getAttribute("data-url"));
+        });
+      });
+    }
+  }, {
+    key: "closePlayer",
+    value: function closePlayer() {
+      var _this2 = this;
+
+      this.close.addEventListener("click", function (e) {
+        e.preventDefault();
+        _this2.popupWrapper.style.display = "none";
+
+        _this2.player.stopVideo();
+
+        document.querySelector("#frame").remove();
+      });
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      var tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      this.bindPlayer();
+      this.closePlayer();
+    }
+  }]);
+
+  return VideoPopup;
 }();
 
 
