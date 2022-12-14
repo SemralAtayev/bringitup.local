@@ -1,6 +1,7 @@
 import MainSlider from "./modules/sliders/mainSlider";
 import MiniSlider from "./modules/sliders/miniSlider";
 import VideoPopup from "./modules/videoPopup";
+import Cards from "./modules/cards";
 
 window.addEventListener("DOMContentLoaded", () => {
   const slider = new MainSlider({
@@ -38,4 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const videoPopup = new VideoPopup(".play", ".overlay");
   videoPopup.init();
+
+  new Cards('.officerold', '.officer__card-item', '.plus').init();
+  new Cards('.officernew', '.officer__card-item', '.plus').init();
 });

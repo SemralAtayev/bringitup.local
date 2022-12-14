@@ -6,9 +6,12 @@ export default class MiniSlider extends Slider {
   }
 
   decorateSlides() {
-    this.slides[0].querySelectorAll("div").forEach((d) => {
-      d.style.opacity = 1;
-    });
+    if(this.animate){ 
+      this.slides[0].querySelectorAll("div").forEach((d) => {
+        d.style.opacity = 1;
+      });
+    }
+   
   }
 
   autoplaySlides() {

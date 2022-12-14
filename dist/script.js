@@ -2763,6 +2763,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/sliders/mainSlider */ "./src/js/modules/sliders/mainSlider.js");
 /* harmony import */ var _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/sliders/miniSlider */ "./src/js/modules/sliders/miniSlider.js");
 /* harmony import */ var _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/videoPopup */ "./src/js/modules/videoPopup.js");
+/* harmony import */ var _modules_cards__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/cards */ "./src/js/modules/cards.js");
+
 
 
 
@@ -2798,7 +2800,81 @@ window.addEventListener("DOMContentLoaded", function () {
   feedSlider.init();
   var videoPopup = new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".play", ".overlay");
   videoPopup.init();
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"]('.officerold', '.officer__card-item', '.plus').init();
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"]('.officernew', '.officer__card-item', '.plus').init();
 });
+
+/***/ }),
+
+/***/ "./src/js/modules/cards.js":
+/*!*********************************!*\
+  !*** ./src/js/modules/cards.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Cards; });
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Cards =
+/*#__PURE__*/
+function () {
+  function Cards(cardWrapperSelector, cardItemSelector, triggersSelector) {
+    _classCallCheck(this, Cards);
+
+    this.cardWrapper = document.querySelector(cardWrapperSelector);
+    this.cardItem = this.cardWrapper.querySelectorAll(cardItemSelector);
+    this.trigger = this.cardWrapper.querySelector(triggersSelector);
+    this.cardIndex = 0;
+    this.lastItem = this.cardItem[this.cardItem.length - 1];
+  }
+
+  _createClass(Cards, [{
+    key: "bindTriggers",
+    value: function bindTriggers() {
+      var _this = this;
+
+      this.trigger.addEventListener("click", function () {
+        _this.cardItem.forEach(function (item, i) {
+          if (item != _this.lastItem && _this.cardIndex < _this.cardItem.length - 1) {
+            _this.cardItem[_this.cardIndex].style.display = "flex";
+          } else if (_this.cardIndex > _this.cardItem.length - 3) {
+            _this.lastItem.remove();
+          }
+        });
+
+        _this.cardIndex++;
+      });
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      this.cardItem.forEach(function (item) {
+        if (item != _this2.lastItem) {
+          item.classList.add("animated", "fadeIn");
+          item.style.display = "none";
+        }
+      });
+      this.bindTriggers();
+    }
+  }]);
+
+  return Cards;
+}();
+
+
 
 /***/ }),
 
@@ -3021,9 +3097,11 @@ function (_Slider) {
   _createClass(MiniSlider, [{
     key: "decorateSlides",
     value: function decorateSlides() {
-      this.slides[0].querySelectorAll("div").forEach(function (d) {
-        d.style.opacity = 1;
-      });
+      if (this.animate) {
+        this.slides[0].querySelectorAll("div").forEach(function (d) {
+          d.style.opacity = 1;
+        });
+      }
     }
   }, {
     key: "autoplaySlides",
