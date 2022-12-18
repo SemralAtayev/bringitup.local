@@ -1,8 +1,11 @@
 export default class VideoPopup {
   constructor(triggerSelector, popupWrapper) {
-    this.trigger = document.querySelectorAll(triggerSelector);
-    this.popupWrapper = document.querySelector(popupWrapper);
-    this.close = this.popupWrapper.querySelector(".close");
+    try {
+      this.trigger = document.querySelectorAll(triggerSelector);
+      this.popupWrapper = document.querySelector(popupWrapper);
+      this.close = this.popupWrapper.querySelector(".close");
+      this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
+    } catch (error) {}
   }
 
   сreatePlayer(url) {
@@ -10,20 +13,64 @@ export default class VideoPopup {
       height: "360",
       width: "640",
       videoId: `${url}`,
+      events: {
+        onStateChange: this.onPlayerStateChange,
+      },
     });
 
     this.popupWrapper.style.display = "flex";
   }
 
-  bindPlayer() {
-    this.trigger.forEach((btn) => {
-      btn.addEventListener("click", (ev) => {
-        this.iframe = document.createElement("div");
-        this.iframe.setAttribute("id", "frame");
-        this.popupWrapper.firstElementChild.appendChild(this.iframe);      
+  onPlayerStateChange(state) {
+    try {
+      const blockedElem = this.activeBtn.closest(
+        ".module__video-item"
+      ).nextElementSibling;
+      const playBtn = this.activeBtn.querySelector("svg").cloneNode(true);
 
-        this.popupWrapper.style.display = "flex";
-        this.сreatePlayer(btn.getAttribute("data-url"));
+      if (state.data === 0) {
+        if (
+          blockedElem
+            .querySelector(".play__circle")
+            .classList.contains("closed")
+        ) {
+          blockedElem.querySelector(".play__circle").classList.remove("closed");
+          blockedElem.querySelector("svg").remove();
+          blockedElem.querySelector(".play__circle").appendChild(playBtn);
+          blockedElem.querySelector(".play__text").textContent = "play video";
+          blockedElem
+            .querySelector(".play__text")
+            .classList.remove("attention");
+          blockedElem.style.opacity = 1;
+          blockedElem.style.filter = "none";
+
+          blockedElem.setAttribute("data-disabled", "false");
+        }
+      }
+    } catch (error) {}
+  }
+
+  bindPlayer() {
+    this.trigger.forEach((btn, i) => {
+      try {
+        const blockedElem = btn.closest(".module__video-item").nextElementSibling;
+
+        if (i % 2 == 0) {
+          blockedElem.setAttribute("data-disabled", "true");
+        }
+      } catch (e) {}
+
+      btn.addEventListener("click", () => {
+        if (!btn.closest('.module__video-item') || btn.closest(".module__video-item").getAttribute("data-disabled") !== "true" ) {
+          this.activeBtn = btn;
+          if (document.querySelector("iframe#frame")) {
+            this.popupWrapper.style.display = "flex";
+          }
+          this.iframe = document.createElement("div");
+          this.iframe.setAttribute("id", "frame");
+          this.popupWrapper.firstElementChild.appendChild(this.iframe);
+          this.сreatePlayer(btn.getAttribute("data-url"));
+        }
       });
     });
   }
@@ -38,13 +85,17 @@ export default class VideoPopup {
   }
 
   init() {
-    const tag = document.createElement("script");
-    
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    if (this.trigger.length > 0) {
+      const tag = document.createElement("script");
 
-    this.bindPlayer();
-    this.closePlayer();
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      try {
+        this.bindPlayer();
+        this.closePlayer();
+      } catch (error) {}
+    }
   }
 }

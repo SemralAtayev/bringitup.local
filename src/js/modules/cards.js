@@ -1,10 +1,12 @@
 export default class Cards {
   constructor(cardWrapperSelector, cardItemSelector, triggersSelector) {
-    this.cardWrapper = document.querySelector(cardWrapperSelector);
-    this.cardItem = this.cardWrapper.querySelectorAll(cardItemSelector);
-    this.trigger = this.cardWrapper.querySelector(triggersSelector);
-    this.cardIndex = 0;
-    this.lastItem = this.cardItem[this.cardItem.length - 1];
+    try {
+      this.cardWrapper = document.querySelector(cardWrapperSelector);
+      this.cardItem = this.cardWrapper.querySelectorAll(cardItemSelector);
+      this.trigger = this.cardWrapper.querySelector(triggersSelector);
+      this.cardIndex = 0;
+      this.lastItem = this.cardItem[this.cardItem.length - 1];
+    } catch (error) {}
   }
 
   bindTriggers() {
@@ -24,13 +26,15 @@ export default class Cards {
   }
 
   init() {
-    this.cardItem.forEach((item) => {
-      if (item != this.lastItem) {
-        item.classList.add("animated", "fadeIn");
-        item.style.display = "none";
-      }
-    });
+    try {
+      this.cardItem.forEach((item) => {
+        if (item != this.lastItem) {
+          item.classList.add("animated", "fadeIn");
+          item.style.display = "none";
+        }
+      });
 
-    this.bindTriggers();
+      this.bindTriggers();
+    } catch (error) {}
   }
 }

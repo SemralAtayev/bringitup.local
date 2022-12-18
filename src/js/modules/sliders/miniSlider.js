@@ -6,12 +6,11 @@ export default class MiniSlider extends Slider {
   }
 
   decorateSlides() {
-    if(this.animate){ 
+    if (this.animate) {
       this.slides[0].querySelectorAll("div").forEach((d) => {
         d.style.opacity = 1;
       });
     }
-   
   }
 
   autoplaySlides() {
@@ -24,76 +23,84 @@ export default class MiniSlider extends Slider {
   }
 
   throwEnd() {
-    if (
-      this.slides[0].tagName == "BUTTON" ||
-      this.slides[1].tagName == "BUTTON"
-    ) {
-      const btns = this.wrapper.querySelectorAll('[type = "button"]');
-      btns.forEach((btn) => {
-        this.wrapper.appendChild(btn);
-      });
-    }
+    try {
+      if (
+        this.slides[0].tagName == "BUTTON" ||
+        this.slides[1].tagName == "BUTTON"
+      ) {
+        const btns = this.wrapper.querySelectorAll('[type = "button"]');
+        btns.forEach((btn) => {
+          this.wrapper.appendChild(btn);
+        });
+      }
+    } catch (error) {}
   }
 
   throwToBegin() {
-    if (
-      this.slides[this.slides.length - 1].tagName == "BUTTON" ||
-      this.slides[this.slides.length - 2].tagName == "BUTTON"
-    ) {
-      const btns = this.wrapper.querySelectorAll('[type = "button"]');
-      btns.forEach((btn) => {
-        this.wrapper.insertBefore(btn, this.slides[this.slides.length - 3]);
-      });
-    }
+    try {
+      if (
+        this.slides[this.slides.length - 1].tagName == "BUTTON" ||
+        this.slides[this.slides.length - 2].tagName == "BUTTON"
+      ) {
+        const btns = this.wrapper.querySelectorAll('[type = "button"]');
+        btns.forEach((btn) => {
+          this.wrapper.insertBefore(btn, this.slides[this.slides.length - 3]);
+        });
+      }
+    } catch (error) {}
   }
 
   switchSlides() {
-    // next
-    this.next.addEventListener("click", () => {
-      this.slides.forEach((slide) => {
-        slide.classList.remove(this.activeClass);
-        slide.querySelectorAll("div").forEach((d) => {
-          d.style.opacity = "";
+    try {
+      // next
+      this.next.addEventListener("click", () => {
+        this.slides.forEach((slide) => {
+          slide.classList.remove(this.activeClass);
+          slide.querySelectorAll("div").forEach((d) => {
+            d.style.opacity = "";
+          });
         });
+
+        this.wrapper.appendChild(this.slides[0]);
+
+        this.slides[0].classList.add(this.activeClass);
+
+        this.decorateSlides();
+
+        this.throwEnd();
       });
 
-      this.wrapper.appendChild(this.slides[0]);
+      // prev
 
-      this.slides[0].classList.add(this.activeClass);
+      this.prev.addEventListener("click", () => {
+        let activeSlide = this.slides[this.slides.length - 1];
 
-      this.decorateSlides();
-
-      this.throwEnd();
-    });
-
-    // prev
-
-    this.prev.addEventListener("click", () => {
-      let activeSlide = this.slides[this.slides.length - 1];
-
-      this.slides.forEach((slide) => {
-        slide.classList.remove(this.activeClass);
-        slide.querySelectorAll("div").forEach((d) => {
-          d.style.opacity = "";
+        this.slides.forEach((slide) => {
+          slide.classList.remove(this.activeClass);
+          slide.querySelectorAll("div").forEach((d) => {
+            d.style.opacity = "";
+          });
         });
+
+        this.wrapper.insertBefore(activeSlide, this.wrapper.firstChild);
+
+        activeSlide.classList.add(this.activeClass);
+
+        this.decorateSlides();
+
+        this.throwToBegin();
       });
-
-      this.wrapper.insertBefore(activeSlide, this.wrapper.firstChild);
-
-      activeSlide.classList.add(this.activeClass);
-
-      this.decorateSlides();
-
-      this.throwToBegin();
-    });
+    } catch (error) {}
   }
 
   init() {
-    this.wrapper.style.cssText = `
-     overflow: hidden;
-     display: flex;
-     flex-wrap: wrap;
-     align-items: flex-start`;
+    try {
+      this.wrapper.style.cssText = `
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start`;
+    } catch (error) {}
 
     this.decorateSlides();
 

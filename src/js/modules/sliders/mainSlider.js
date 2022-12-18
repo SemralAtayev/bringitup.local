@@ -1,27 +1,29 @@
 import Slider from "./slider";
 
 export default class MainSlider extends Slider {
-  constructor(triggersSelector, wrapperSelector) {
-    super(triggersSelector, wrapperSelector);
+  constructor(triggersSelector, wrapperSelector, prevOther, nextOther) {
+    super(triggersSelector, wrapperSelector, prevOther, nextOther);
   }
-  
+
   showSlide(n) {
-    if (n > this.slides.length) {
-      this.sliderIndex = 1;
-    }
-    if (n < 1) {
-      this.sliderIndex = this.slides.length;
-    }
+    try {
+      if (n > this.slides.length) {
+        this.sliderIndex = 1;
+      }
+      if (n < 1) {
+        this.sliderIndex = this.slides.length;
+      }
 
-    this.slides.forEach((slide) => {
-      slide.classList.add("fadeInDown", "animated");
-      slide.style.opacity = "0";
-      slide.style.transition = "all .6s ease";
-      slide.style.display = "none";
-    });
+      this.slides.forEach((slide) => {
+        slide.classList.add("fadeInDown", "animated");
+        slide.style.opacity = "0";
+        slide.style.transition = "all .6s ease";
+        slide.style.display = "none";
+      });
 
-    this.slides[this.sliderIndex - 1].style.opacity = "1";
-    this.slides[this.sliderIndex - 1].style.display = "block";
+      this.slides[this.sliderIndex - 1].style.opacity = "1";
+      this.slides[this.sliderIndex - 1].style.display = "block";
+    } catch (error) {}
 
     try {
       this.teacher = document.querySelector(".hanson");
@@ -46,21 +48,40 @@ export default class MainSlider extends Slider {
   }
 
   render() {
-    this.btns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        this.plusIndex(1);
-      });
-    });
+   
+    if(this.wrapper) {
 
-    this.logo.forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        // console.log('ss');
-        this.sliderIndex = 1;
-        this.showSlide(this.sliderIndex);
+      this.btns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.plusIndex(1);
+        });
       });
-    });
+
+      
+      this.logo.forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          // console.log('ss');
+          this.sliderIndex = 1;
+          this.showSlide(this.sliderIndex);
+        });
+      });
+
+      this.prevOther.forEach((btn)=>{
+        btn.addEventListener('click', ()=>{
+          this.plusIndex(-1);
+          });
+      });
+  
+     this.nextOther.forEach((btn)=>{
+        btn.addEventListener('click', ()=>{
+          this.plusIndex(1);
+          });
+      });
+    } 
+
+  
 
     this.showSlide(this.sliderIndex);
   }

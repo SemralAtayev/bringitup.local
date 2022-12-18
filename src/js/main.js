@@ -6,10 +6,22 @@ import Forms from "./modules/form";
 
 window.addEventListener("DOMContentLoaded", () => {
   const slider = new MainSlider({
-    triggersSelector: ".next",
+    triggersSelector: ".page .next",
     wrapperSelector: ".page",
   });
   slider.render();
+
+  //second page
+
+  const secondPageBigSlider = new MainSlider({
+    triggersSelector: ".sidecontrol .next",
+    wrapperSelector: ".moduleapp",
+    prevOther: '.prevmodule',
+    nextOther: '.nextmodule',
+  });
+  secondPageBigSlider.render();
+
+ 
 
   const showUpSlider = new MiniSlider({
     wrapperSelector: ".showup__content-slider",
@@ -38,11 +50,16 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   feedSlider.init();
 
-  const videoPopup = new VideoPopup(".play", ".overlay");
-  videoPopup.init();
+new VideoPopup(".showup .play", ".overlay").init();
+new VideoPopup(".module__video-item .play", ".overlay").init();
 
-  new Cards('.officerold', '.officer__card-item', '.plus').init();
-  new Cards('.officernew', '.officer__card-item', '.plus').init();
+
+  // second page videoPopup
+
+ 
+
+  new Cards(".officerold", ".officer__card-item", ".plus").init();
+  new Cards(".officernew", ".officer__card-item", ".plus").init();
 
   const mainFromJoin = new Forms();
   mainFromJoin.init();

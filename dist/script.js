@@ -322,6 +322,36 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/internals/array-method-has-species-support.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/core-js/internals/array-method-has-species-support.js ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fails = __webpack_require__(/*! ../internals/fails */ "./node_modules/core-js/internals/fails.js");
+var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "./node_modules/core-js/internals/well-known-symbol.js");
+var V8_VERSION = __webpack_require__(/*! ../internals/v8-version */ "./node_modules/core-js/internals/v8-version.js");
+
+var SPECIES = wellKnownSymbol('species');
+
+module.exports = function (METHOD_NAME) {
+  // We can't use this feature detection in V8 since it causes
+  // deoptimization and serious performance degradation
+  // https://github.com/zloirock/core-js/issues/677
+  return V8_VERSION >= 51 || !fails(function () {
+    var array = [];
+    var constructor = array.constructor = {};
+    constructor[SPECIES] = function () {
+      return { foo: 1 };
+    };
+    return array[METHOD_NAME](Boolean).foo !== 1;
+  });
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/array-species-create.js":
 /*!****************************************************************!*\
   !*** ./node_modules/core-js/internals/array-species-create.js ***!
@@ -2720,6 +2750,38 @@ exports.f = wellKnownSymbol;
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es.array.filter.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/es.array.filter.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__(/*! ../internals/export */ "./node_modules/core-js/internals/export.js");
+var $filter = __webpack_require__(/*! ../internals/array-iteration */ "./node_modules/core-js/internals/array-iteration.js").filter;
+var fails = __webpack_require__(/*! ../internals/fails */ "./node_modules/core-js/internals/fails.js");
+var arrayMethodHasSpeciesSupport = __webpack_require__(/*! ../internals/array-method-has-species-support */ "./node_modules/core-js/internals/array-method-has-species-support.js");
+
+var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('filter');
+// Edge 14- issue
+var USES_TO_LENGTH = HAS_SPECIES_SUPPORT && !fails(function () {
+  [].filter.call({ length: -1, 0: 1 }, function (it) { throw it; });
+});
+
+// `Array.prototype.filter` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.filter
+// with adding support of @@species
+$({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
+  filter: function filter(callbackfn /* , thisArg */) {
+    return $filter(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es.array.iterator.js":
 /*!***********************************************************!*\
   !*** ./node_modules/core-js/modules/es.array.iterator.js ***!
@@ -4571,10 +4633,18 @@ __webpack_require__.r(__webpack_exports__);
 
 window.addEventListener("DOMContentLoaded", function () {
   var slider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__["default"]({
-    triggersSelector: ".next",
+    triggersSelector: ".page .next",
     wrapperSelector: ".page"
   });
-  slider.render();
+  slider.render(); //second page
+
+  var secondPageBigSlider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__["default"]({
+    triggersSelector: ".sidecontrol .next",
+    wrapperSelector: ".moduleapp",
+    prevOther: '.prevmodule',
+    nextOther: '.nextmodule'
+  });
+  secondPageBigSlider.render();
   var showUpSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__["default"]({
     wrapperSelector: ".showup__content-slider",
     prev: ".showup__prev",
@@ -4599,10 +4669,11 @@ window.addEventListener("DOMContentLoaded", function () {
     activeClass: "feed__item-active"
   });
   feedSlider.init();
-  var videoPopup = new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".play", ".overlay");
-  videoPopup.init();
-  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"]('.officerold', '.officer__card-item', '.plus').init();
-  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"]('.officernew', '.officer__card-item', '.plus').init();
+  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".showup .play", ".overlay").init();
+  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".module__video-item .play", ".overlay").init(); // second page videoPopup
+
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"](".officerold", ".officer__card-item", ".plus").init();
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"](".officernew", ".officer__card-item", ".plus").init();
   var mainFromJoin = new _modules_form__WEBPACK_IMPORTED_MODULE_4__["default"]();
   mainFromJoin.init();
 });
@@ -4635,11 +4706,13 @@ function () {
   function Cards(cardWrapperSelector, cardItemSelector, triggersSelector) {
     _classCallCheck(this, Cards);
 
-    this.cardWrapper = document.querySelector(cardWrapperSelector);
-    this.cardItem = this.cardWrapper.querySelectorAll(cardItemSelector);
-    this.trigger = this.cardWrapper.querySelector(triggersSelector);
-    this.cardIndex = 0;
-    this.lastItem = this.cardItem[this.cardItem.length - 1];
+    try {
+      this.cardWrapper = document.querySelector(cardWrapperSelector);
+      this.cardItem = this.cardWrapper.querySelectorAll(cardItemSelector);
+      this.trigger = this.cardWrapper.querySelector(triggersSelector);
+      this.cardIndex = 0;
+      this.lastItem = this.cardItem[this.cardItem.length - 1];
+    } catch (error) {}
   }
 
   _createClass(Cards, [{
@@ -4664,13 +4737,15 @@ function () {
     value: function init() {
       var _this2 = this;
 
-      this.cardItem.forEach(function (item) {
-        if (item != _this2.lastItem) {
-          item.classList.add("animated", "fadeIn");
-          item.style.display = "none";
-        }
-      });
-      this.bindTriggers();
+      try {
+        this.cardItem.forEach(function (item) {
+          if (item != _this2.lastItem) {
+            item.classList.add("animated", "fadeIn");
+            item.style.display = "none";
+          }
+        });
+        this.bindTriggers();
+      } catch (error) {}
     }
   }]);
 
@@ -4869,10 +4944,10 @@ var MainSlider =
 function (_Slider) {
   _inherits(MainSlider, _Slider);
 
-  function MainSlider(triggersSelector, wrapperSelector) {
+  function MainSlider(triggersSelector, wrapperSelector, prevOther, nextOther) {
     _classCallCheck(this, MainSlider);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, triggersSelector, wrapperSelector));
+    return _possibleConstructorReturn(this, _getPrototypeOf(MainSlider).call(this, triggersSelector, wrapperSelector, prevOther, nextOther));
   }
 
   _createClass(MainSlider, [{
@@ -4880,22 +4955,24 @@ function (_Slider) {
     value: function showSlide(n) {
       var _this = this;
 
-      if (n > this.slides.length) {
-        this.sliderIndex = 1;
-      }
+      try {
+        if (n > this.slides.length) {
+          this.sliderIndex = 1;
+        }
 
-      if (n < 1) {
-        this.sliderIndex = this.slides.length;
-      }
+        if (n < 1) {
+          this.sliderIndex = this.slides.length;
+        }
 
-      this.slides.forEach(function (slide) {
-        slide.classList.add("fadeInDown", "animated");
-        slide.style.opacity = "0";
-        slide.style.transition = "all .6s ease";
-        slide.style.display = "none";
-      });
-      this.slides[this.sliderIndex - 1].style.opacity = "1";
-      this.slides[this.sliderIndex - 1].style.display = "block";
+        this.slides.forEach(function (slide) {
+          slide.classList.add("fadeInDown", "animated");
+          slide.style.opacity = "0";
+          slide.style.transition = "all .6s ease";
+          slide.style.display = "none";
+        });
+        this.slides[this.sliderIndex - 1].style.opacity = "1";
+        this.slides[this.sliderIndex - 1].style.display = "block";
+      } catch (error) {}
 
       try {
         this.teacher = document.querySelector(".hanson");
@@ -4924,22 +5001,35 @@ function (_Slider) {
     value: function render() {
       var _this2 = this;
 
-      this.btns.forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-          e.preventDefault();
+      if (this.wrapper) {
+        this.btns.forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.preventDefault();
 
-          _this2.plusIndex(1);
+            _this2.plusIndex(1);
+          });
         });
-      });
-      this.logo.forEach(function (el) {
-        el.addEventListener("click", function (e) {
-          e.preventDefault(); // console.log('ss');
+        this.logo.forEach(function (el) {
+          el.addEventListener("click", function (e) {
+            e.preventDefault(); // console.log('ss');
 
-          _this2.sliderIndex = 1;
+            _this2.sliderIndex = 1;
 
-          _this2.showSlide(_this2.sliderIndex);
+            _this2.showSlide(_this2.sliderIndex);
+          });
         });
-      });
+        this.prevOther.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            _this2.plusIndex(-1);
+          });
+        });
+        this.nextOther.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            _this2.plusIndex(1);
+          });
+        });
+      }
+
       this.showSlide(this.sliderIndex);
     }
   }]);
@@ -5047,73 +5137,82 @@ function (_Slider) {
     value: function throwEnd() {
       var _this2 = this;
 
-      if (this.slides[0].tagName == "BUTTON" || this.slides[1].tagName == "BUTTON") {
-        var btns = this.wrapper.querySelectorAll('[type = "button"]');
-        btns.forEach(function (btn) {
-          _this2.wrapper.appendChild(btn);
-        });
-      }
+      try {
+        if (this.slides[0].tagName == "BUTTON" || this.slides[1].tagName == "BUTTON") {
+          var btns = this.wrapper.querySelectorAll('[type = "button"]');
+          btns.forEach(function (btn) {
+            _this2.wrapper.appendChild(btn);
+          });
+        }
+      } catch (error) {}
     }
   }, {
     key: "throwToBegin",
     value: function throwToBegin() {
       var _this3 = this;
 
-      if (this.slides[this.slides.length - 1].tagName == "BUTTON" || this.slides[this.slides.length - 2].tagName == "BUTTON") {
-        var btns = this.wrapper.querySelectorAll('[type = "button"]');
-        btns.forEach(function (btn) {
-          _this3.wrapper.insertBefore(btn, _this3.slides[_this3.slides.length - 3]);
-        });
-      }
+      try {
+        if (this.slides[this.slides.length - 1].tagName == "BUTTON" || this.slides[this.slides.length - 2].tagName == "BUTTON") {
+          var btns = this.wrapper.querySelectorAll('[type = "button"]');
+          btns.forEach(function (btn) {
+            _this3.wrapper.insertBefore(btn, _this3.slides[_this3.slides.length - 3]);
+          });
+        }
+      } catch (error) {}
     }
   }, {
     key: "switchSlides",
     value: function switchSlides() {
       var _this4 = this;
 
-      // next
-      this.next.addEventListener("click", function () {
-        _this4.slides.forEach(function (slide) {
-          slide.classList.remove(_this4.activeClass);
-          slide.querySelectorAll("div").forEach(function (d) {
-            d.style.opacity = "";
+      try {
+        // next
+        this.next.addEventListener("click", function () {
+          _this4.slides.forEach(function (slide) {
+            slide.classList.remove(_this4.activeClass);
+            slide.querySelectorAll("div").forEach(function (d) {
+              d.style.opacity = "";
+            });
           });
-        });
 
-        _this4.wrapper.appendChild(_this4.slides[0]);
+          _this4.wrapper.appendChild(_this4.slides[0]);
 
-        _this4.slides[0].classList.add(_this4.activeClass);
+          _this4.slides[0].classList.add(_this4.activeClass);
 
-        _this4.decorateSlides();
+          _this4.decorateSlides();
 
-        _this4.throwEnd();
-      }); // prev
+          _this4.throwEnd();
+        }); // prev
 
-      this.prev.addEventListener("click", function () {
-        var activeSlide = _this4.slides[_this4.slides.length - 1];
+        this.prev.addEventListener("click", function () {
+          var activeSlide = _this4.slides[_this4.slides.length - 1];
 
-        _this4.slides.forEach(function (slide) {
-          slide.classList.remove(_this4.activeClass);
-          slide.querySelectorAll("div").forEach(function (d) {
-            d.style.opacity = "";
+          _this4.slides.forEach(function (slide) {
+            slide.classList.remove(_this4.activeClass);
+            slide.querySelectorAll("div").forEach(function (d) {
+              d.style.opacity = "";
+            });
           });
+
+          _this4.wrapper.insertBefore(activeSlide, _this4.wrapper.firstChild);
+
+          activeSlide.classList.add(_this4.activeClass);
+
+          _this4.decorateSlides();
+
+          _this4.throwToBegin();
         });
-
-        _this4.wrapper.insertBefore(activeSlide, _this4.wrapper.firstChild);
-
-        activeSlide.classList.add(_this4.activeClass);
-
-        _this4.decorateSlides();
-
-        _this4.throwToBegin();
-      });
+      } catch (error) {}
     }
   }, {
     key: "init",
     value: function init() {
       var _this5 = this;
 
-      this.wrapper.style.cssText = "\n     overflow: hidden;\n     display: flex;\n     flex-wrap: wrap;\n     align-items: flex-start";
+      try {
+        this.wrapper.style.cssText = "\n    overflow: hidden;\n    display: flex;\n    flex-wrap: wrap;\n    align-items: flex-start";
+      } catch (error) {}
+
       this.decorateSlides();
       this.switchSlides();
 
@@ -5156,6 +5255,10 @@ var Slider = function Slider() {
       prev = _ref$prev === void 0 ? null : _ref$prev,
       _ref$next = _ref.next,
       next = _ref$next === void 0 ? null : _ref$next,
+      _ref$prevOther = _ref.prevOther,
+      prevOther = _ref$prevOther === void 0 ? null : _ref$prevOther,
+      _ref$nextOther = _ref.nextOther,
+      nextOther = _ref$nextOther === void 0 ? null : _ref$nextOther,
       _ref$activeClass = _ref.activeClass,
       activeClass = _ref$activeClass === void 0 ? "" : _ref$activeClass,
       animate = _ref.animate,
@@ -5163,16 +5266,20 @@ var Slider = function Slider() {
 
   _classCallCheck(this, Slider);
 
-  this.btns = document.querySelectorAll(triggersSelector);
-  this.wrapper = document.querySelector(wrapperSelector);
-  this.slides = this.wrapper.children;
-  this.sliderIndex = 1;
-  this.logo = document.querySelectorAll(".original_logo");
-  this.prev = document.querySelector(prev);
-  this.next = document.querySelector(next);
-  this.animate = animate;
-  this.autoplay = autoplay;
-  this.activeClass = activeClass;
+  try {
+    this.btns = document.querySelectorAll(triggersSelector);
+    this.wrapper = document.querySelector(wrapperSelector);
+    this.slides = this.wrapper.children;
+    this.sliderIndex = 1;
+    this.logo = document.querySelectorAll(".original_logo");
+    this.prev = document.querySelector(prev);
+    this.next = document.querySelector(next);
+    this.prevOther = document.querySelectorAll(prevOther);
+    this.nextOther = document.querySelectorAll(nextOther);
+    this.animate = animate;
+    this.autoplay = autoplay;
+    this.activeClass = activeClass;
+  } catch (error) {}
 };
 
 
@@ -5189,8 +5296,11 @@ var Slider = function Slider() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return VideoPopup; });
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_array_filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.array.filter */ "./node_modules/core-js/modules/es.array.filter.js");
+/* harmony import */ var core_js_modules_es_array_filter__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_filter__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5205,9 +5315,12 @@ function () {
   function VideoPopup(triggerSelector, popupWrapper) {
     _classCallCheck(this, VideoPopup);
 
-    this.trigger = document.querySelectorAll(triggerSelector);
-    this.popupWrapper = document.querySelector(popupWrapper);
-    this.close = this.popupWrapper.querySelector(".close");
+    try {
+      this.trigger = document.querySelectorAll(triggerSelector);
+      this.popupWrapper = document.querySelector(popupWrapper);
+      this.close = this.popupWrapper.querySelector(".close");
+      this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
+    } catch (error) {}
   }
 
   _createClass(VideoPopup, [{
@@ -5216,26 +5329,64 @@ function () {
       this.player = new YT.Player("frame", {
         height: "360",
         width: "640",
-        videoId: "".concat(url)
+        videoId: "".concat(url),
+        events: {
+          onStateChange: this.onPlayerStateChange
+        }
       });
       this.popupWrapper.style.display = "flex";
+    }
+  }, {
+    key: "onPlayerStateChange",
+    value: function onPlayerStateChange(state) {
+      try {
+        var blockedElem = this.activeBtn.closest(".module__video-item").nextElementSibling;
+        var playBtn = this.activeBtn.querySelector("svg").cloneNode(true);
+
+        if (state.data === 0) {
+          if (blockedElem.querySelector(".play__circle").classList.contains("closed")) {
+            blockedElem.querySelector(".play__circle").classList.remove("closed");
+            blockedElem.querySelector("svg").remove();
+            blockedElem.querySelector(".play__circle").appendChild(playBtn);
+            blockedElem.querySelector(".play__text").textContent = "play video";
+            blockedElem.querySelector(".play__text").classList.remove("attention");
+            blockedElem.style.opacity = 1;
+            blockedElem.style.filter = "none";
+            blockedElem.setAttribute("data-disabled", "false");
+          }
+        }
+      } catch (error) {}
     }
   }, {
     key: "bindPlayer",
     value: function bindPlayer() {
       var _this = this;
 
-      this.trigger.forEach(function (btn) {
-        btn.addEventListener("click", function (ev) {
-          _this.iframe = document.createElement("div");
+      this.trigger.forEach(function (btn, i) {
+        try {
+          var blockedElem = btn.closest(".module__video-item").nextElementSibling;
 
-          _this.iframe.setAttribute("id", "frame");
+          if (i % 2 == 0) {
+            blockedElem.setAttribute("data-disabled", "true");
+          }
+        } catch (e) {}
 
-          _this.popupWrapper.firstElementChild.appendChild(_this.iframe);
+        btn.addEventListener("click", function () {
+          if (!btn.closest('.module__video-item') || btn.closest(".module__video-item").getAttribute("data-disabled") !== "true") {
+            _this.activeBtn = btn;
 
-          _this.popupWrapper.style.display = "flex";
+            if (document.querySelector("iframe#frame")) {
+              _this.popupWrapper.style.display = "flex";
+            }
 
-          _this.сreatePlayer(btn.getAttribute("data-url"));
+            _this.iframe = document.createElement("div");
+
+            _this.iframe.setAttribute("id", "frame");
+
+            _this.popupWrapper.firstElementChild.appendChild(_this.iframe);
+
+            _this.сreatePlayer(btn.getAttribute("data-url"));
+          }
         });
       });
     }
@@ -5256,12 +5407,17 @@ function () {
   }, {
     key: "init",
     value: function init() {
-      var tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      this.bindPlayer();
-      this.closePlayer();
+      if (this.trigger.length > 0) {
+        var tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        try {
+          this.bindPlayer();
+          this.closePlayer();
+        } catch (error) {}
+      }
     }
   }]);
 
