@@ -86,6 +86,27 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/accordion-js/dist/accordion.min.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/accordion-js/dist/accordion.min.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Accordion v3.3.2
+ * Lightweight and accessible accordion module created in pure Javascript
+ * https://github.com/michu2k/Accordion
+ * 
+ * Copyright (c) Michał Strumpf
+ * Published under MIT License
+ */
+
+!function(e){var t=0,n=function e(n,s){var i=this,o=this,a=!1;if(Array.isArray(n))return!!n.length&&n.map((function(t){return new e(t,s)}));var r={init:function(){this.options=Object.assign({duration:600,ariaEnabled:!0,collapse:!0,showMultiple:!1,onlyChildNodes:!0,openOnInit:[],elementClass:"ac",triggerClass:"ac-trigger",panelClass:"ac-panel",activeClass:"is-active",beforeOpen:function(){},onOpen:function(){},beforeClose:function(){},onClose:function(){}},s);var e="string"==typeof n;this.container=e?document.querySelector(n):n,this.createDefinitions(),o.attachEvents()},createDefinitions:function(){var e=this,n=this.options,s=n.elementClass,i=n.openOnInit,o=n.onlyChildNodes?this.container.childNodes:this.container.querySelectorAll(".".concat(s));this.elements=Array.from(o).filter((function(e){return e.classList&&e.classList.contains(s)})),this.firstElement=this.elements[0],this.lastElement=this.elements[this.elements.length-1],this.elements.filter((function(e){return!e.classList.contains("js-enabled")})).forEach((function(n){n.classList.add("js-enabled"),e.generateIDs(n),e.setARIA(n),e.setTransition(n);var s=e.elements.indexOf(n);t++,i.includes(s)?e.showElement(n,!1):e.closeElement(n,!1)}))},setTransition:function(e){var t=arguments.length>1&&void 0!==arguments[1]&&arguments[1],n=this.options,s=n.duration,i=n.panelClass,o=e.querySelector(".".concat(i)),a=c("transitionDuration");o.style[a]=t?null:"".concat(s,"ms")},generateIDs:function(e){var n=this.options,s=n.triggerClass,i=n.panelClass,o=e.querySelector(".".concat(s)),a=e.querySelector(".".concat(i));e.setAttribute("id","ac-".concat(t)),o.setAttribute("id","ac-trigger-".concat(t)),a.setAttribute("id","ac-panel-".concat(t))},removeIDs:function(e){var t=this.options,n=t.triggerClass,s=t.panelClass,i=e.querySelector(".".concat(n)),o=e.querySelector(".".concat(s));e.removeAttribute("id"),i.removeAttribute("id"),o.removeAttribute("id")},setARIA:function(e){var n=this.options,s=n.ariaEnabled,i=n.triggerClass,o=n.panelClass;if(s){var a=e.querySelector(".".concat(i)),r=e.querySelector(".".concat(o));a.setAttribute("role","button"),a.setAttribute("aria-controls","ac-panel-".concat(t)),a.setAttribute("aria-disabled",!1),a.setAttribute("aria-expanded",!1),r.setAttribute("role","region"),r.setAttribute("aria-labelledby","ac-trigger-".concat(t))}},updateARIA:function(e,t){var n=t.ariaExpanded,s=t.ariaDisabled,i=this.options,o=i.ariaEnabled,a=i.triggerClass;if(o){var r=e.querySelector(".".concat(a));r.setAttribute("aria-expanded",n),r.setAttribute("aria-disabled",s)}},removeARIA:function(e){var t=this.options,n=t.ariaEnabled,s=t.triggerClass,i=t.panelClass;if(n){var o=e.querySelector(".".concat(s)),a=e.querySelector(".".concat(i));o.removeAttribute("role"),o.removeAttribute("aria-controls"),o.removeAttribute("aria-disabled"),o.removeAttribute("aria-expanded"),a.removeAttribute("role"),a.removeAttribute("aria-labelledby")}},focus:function(e,t){e.preventDefault();var n=this.options.triggerClass;t.querySelector(".".concat(n)).focus()},focusFirstElement:function(e){this.focus(e,this.firstElement),this.currFocusedIdx=0},focusLastElement:function(e){this.focus(e,this.lastElement),this.currFocusedIdx=this.elements.length-1},focusNextElement:function(e){var t=this.currFocusedIdx+1;if(t>this.elements.length-1)return this.focusFirstElement(e);this.focus(e,this.elements[t]),this.currFocusedIdx=t},focusPrevElement:function(e){var t=this.currFocusedIdx-1;if(t<0)return this.focusLastElement(e);this.focus(e,this.elements[t]),this.currFocusedIdx=t},showElement:function(e){var t=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],n=this.options,s=n.panelClass,i=n.activeClass,o=n.collapse,a=n.beforeOpen;t&&a(e);var r=e.querySelector(".".concat(s)),c=r.scrollHeight;e.classList.add(i),requestAnimationFrame((function(){requestAnimationFrame((function(){r.style.height=t?"".concat(c,"px"):"auto"}))})),this.updateARIA(e,{ariaExpanded:!0,ariaDisabled:!o})},closeElement:function(e){var t=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],n=this.options,s=n.panelClass,i=n.activeClass,o=n.beforeClose,a=e.querySelector(".".concat(s)),r=a.scrollHeight;e.classList.remove(i),t?(o(e),requestAnimationFrame((function(){a.style.height="".concat(r,"px"),requestAnimationFrame((function(){a.style.height=0}))}))):a.style.height=0,this.updateARIA(e,{ariaExpanded:!1,ariaDisabled:!1})},toggleElement:function(e){var t=this.options,n=t.activeClass,s=t.collapse,i=e.classList.contains(n);if(!i||s)return i?this.closeElement(e):this.showElement(e)},closeElements:function(){var e=this,t=this.options,n=t.activeClass;t.showMultiple||this.elements.forEach((function(t,s){t.classList.contains(n)&&s!==e.currFocusedIdx&&e.closeElement(t)}))},handleClick:function(e){var t=this,n=e.currentTarget;this.elements.forEach((function(s,i){s.contains(n)&&"A"!==e.target.nodeName&&(t.currFocusedIdx=i,t.closeElements(),t.focus(e,s),t.toggleElement(s))}))},handleKeydown:function(e){var t=38,n=40,s=36,i=35;switch(e.keyCode){case t:return this.focusPrevElement(e);case n:return this.focusNextElement(e);case s:return this.focusFirstElement(e);case i:return this.focusLastElement(e);default:return null}},handleTransitionEnd:function(e){if("height"===e.propertyName){var t=this.options,n=t.onOpen,s=t.onClose,i=e.currentTarget,o=parseInt(i.style.height),a=this.elements.find((function(e){return e.contains(i)}));o>0?(i.style.height="auto",n(a)):s(a)}}};this.attachEvents=function(){if(!a){var e=r.options,t=e.triggerClass,n=e.panelClass;r.handleClick=r.handleClick.bind(r),r.handleKeydown=r.handleKeydown.bind(r),r.handleTransitionEnd=r.handleTransitionEnd.bind(r),r.elements.forEach((function(e){var s=e.querySelector(".".concat(t)),i=e.querySelector(".".concat(n));s.addEventListener("click",r.handleClick),s.addEventListener("keydown",r.handleKeydown),i.addEventListener("webkitTransitionEnd",r.handleTransitionEnd),i.addEventListener("transitionend",r.handleTransitionEnd)})),a=!0}},this.detachEvents=function(){if(a){var e=r.options,t=e.triggerClass,n=e.panelClass;r.elements.forEach((function(e){var s=e.querySelector(".".concat(t)),i=e.querySelector(".".concat(n));s.removeEventListener("click",r.handleClick),s.removeEventListener("keydown",r.handleKeydown),i.removeEventListener("webkitTransitionEnd",r.handleTransitionEnd),i.removeEventListener("transitionend",r.handleTransitionEnd)})),a=!1}},this.toggle=function(e){var t=r.elements[e];t&&r.toggleElement(t)},this.open=function(e){var t=r.elements[e];t&&r.showElement(t)},this.openAll=function(){var e=r.options,t=e.activeClass,n=e.onOpen;r.elements.forEach((function(e){e.classList.contains(t)||(r.showElement(e,!1),n(e))}))},this.close=function(e){var t=r.elements[e];t&&r.closeElement(t)},this.closeAll=function(){var e=r.options,t=e.activeClass,n=e.onClose;r.elements.forEach((function(e){e.classList.contains(t)&&(r.closeElement(e,!1),n(e))}))},this.destroy=function(){i.detachEvents(),i.openAll(),r.elements.forEach((function(e){r.removeIDs(e),r.removeARIA(e),r.setTransition(e,!0)})),a=!0},this.update=function(){r.createDefinitions(),i.detachEvents(),i.attachEvents()};var c=function(e){return"string"==typeof document.documentElement.style[e]?e:(e=l(e),e="webkit".concat(e))},l=function(e){return e.charAt(0).toUpperCase()+e.slice(1)};r.init()}; true&&void 0!==module.exports?module.exports=n:e.Accordion=n}(window);
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/a-function.js":
 /*!******************************************************!*\
   !*** ./node_modules/core-js/internals/a-function.js ***!
@@ -177,6 +198,35 @@ module.exports = function (it) {
   if (!isObject(it)) {
     throw TypeError(String(it) + ' is not an object');
   } return it;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/array-fill.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/internals/array-fill.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var toObject = __webpack_require__(/*! ../internals/to-object */ "./node_modules/core-js/internals/to-object.js");
+var toAbsoluteIndex = __webpack_require__(/*! ../internals/to-absolute-index */ "./node_modules/core-js/internals/to-absolute-index.js");
+var toLength = __webpack_require__(/*! ../internals/to-length */ "./node_modules/core-js/internals/to-length.js");
+
+// `Array.prototype.fill` method implementation
+// https://tc39.github.io/ecma262/#sec-array.prototype.fill
+module.exports = function fill(value /* , start = 0, end = @length */) {
+  var O = toObject(this);
+  var length = toLength(O.length);
+  var argumentsLength = arguments.length;
+  var index = toAbsoluteIndex(argumentsLength > 1 ? arguments[1] : undefined, length);
+  var end = argumentsLength > 2 ? arguments[2] : undefined;
+  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
+  while (endPos > index) O[index++] = value;
+  return O;
 };
 
 
@@ -2750,6 +2800,29 @@ exports.f = wellKnownSymbol;
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es.array.fill.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/core-js/modules/es.array.fill.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(/*! ../internals/export */ "./node_modules/core-js/internals/export.js");
+var fill = __webpack_require__(/*! ../internals/array-fill */ "./node_modules/core-js/internals/array-fill.js");
+var addToUnscopables = __webpack_require__(/*! ../internals/add-to-unscopables */ "./node_modules/core-js/internals/add-to-unscopables.js");
+
+// `Array.prototype.fill` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.fill
+$({ target: 'Array', proto: true }, {
+  fill: fill
+});
+
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables('fill');
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es.array.filter.js":
 /*!*********************************************************!*\
   !*** ./node_modules/core-js/modules/es.array.filter.js ***!
@@ -2843,6 +2916,38 @@ Iterators.Arguments = Iterators.Array;
 addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.array.map.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/es.array.map.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__(/*! ../internals/export */ "./node_modules/core-js/internals/export.js");
+var $map = __webpack_require__(/*! ../internals/array-iteration */ "./node_modules/core-js/internals/array-iteration.js").map;
+var fails = __webpack_require__(/*! ../internals/fails */ "./node_modules/core-js/internals/fails.js");
+var arrayMethodHasSpeciesSupport = __webpack_require__(/*! ../internals/array-method-has-species-support */ "./node_modules/core-js/internals/array-method-has-species-support.js");
+
+var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('map');
+// FF49- issue
+var USES_TO_LENGTH = HAS_SPECIES_SUPPORT && !fails(function () {
+  [].map.call({ length: -1, 0: 1 }, function (it) { throw it; });
+});
+
+// `Array.prototype.map` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.map
+// with adding support of @@species
+$({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
+  map: function map(callbackfn /* , thisArg */) {
+    return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
 
 
 /***/ }),
@@ -4621,31 +4726,40 @@ module.exports = g;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/sliders/mainSlider */ "./src/js/modules/sliders/mainSlider.js");
-/* harmony import */ var _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/sliders/miniSlider */ "./src/js/modules/sliders/miniSlider.js");
-/* harmony import */ var _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/videoPopup */ "./src/js/modules/videoPopup.js");
-/* harmony import */ var _modules_cards__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/cards */ "./src/js/modules/cards.js");
-/* harmony import */ var _modules_form__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/form */ "./src/js/modules/form.js");
+/* harmony import */ var core_js_modules_es_array_fill__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.array.fill */ "./node_modules/core-js/modules/es.array.fill.js");
+/* harmony import */ var core_js_modules_es_array_fill__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_fill__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_array_map__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.array.map */ "./node_modules/core-js/modules/es.array.map.js");
+/* harmony import */ var core_js_modules_es_array_map__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_map__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/sliders/mainSlider */ "./src/js/modules/sliders/mainSlider.js");
+/* harmony import */ var _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/sliders/miniSlider */ "./src/js/modules/sliders/miniSlider.js");
+/* harmony import */ var _modules_videoPopup__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/videoPopup */ "./src/js/modules/videoPopup.js");
+/* harmony import */ var _modules_cards__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/cards */ "./src/js/modules/cards.js");
+/* harmony import */ var _modules_form__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/form */ "./src/js/modules/form.js");
+/* harmony import */ var accordion_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! accordion-js */ "./node_modules/accordion-js/dist/accordion.min.js");
+/* harmony import */ var accordion_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(accordion_js__WEBPACK_IMPORTED_MODULE_7__);
+
+
+
 
 
 
 
 
 window.addEventListener("DOMContentLoaded", function () {
-  var slider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  var slider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_2__["default"]({
     triggersSelector: ".page .next",
     wrapperSelector: ".page"
   });
   slider.render(); //second page
 
-  var secondPageBigSlider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  var secondPageBigSlider = new _modules_sliders_mainSlider__WEBPACK_IMPORTED_MODULE_2__["default"]({
     triggersSelector: ".sidecontrol .next",
     wrapperSelector: ".moduleapp",
-    prevOther: '.prevmodule',
-    nextOther: '.nextmodule'
+    prevOther: ".prevmodule",
+    nextOther: ".nextmodule"
   });
   secondPageBigSlider.render();
-  var showUpSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__["default"]({
+  var showUpSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_3__["default"]({
     wrapperSelector: ".showup__content-slider",
     prev: ".showup__prev",
     next: ".showup__next",
@@ -4653,7 +4767,7 @@ window.addEventListener("DOMContentLoaded", function () {
     animate: true
   });
   showUpSlider.init();
-  var modulesSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__["default"]({
+  var modulesSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_3__["default"]({
     wrapperSelector: ".modules__content-slider",
     prev: ".modules__info-btns .slick-prev",
     next: ".modules__info-btns .slick-next",
@@ -4662,20 +4776,33 @@ window.addEventListener("DOMContentLoaded", function () {
     autoplay: true
   });
   modulesSlider.init();
-  var feedSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_1__["default"]({
+  var feedSlider = new _modules_sliders_miniSlider__WEBPACK_IMPORTED_MODULE_3__["default"]({
     wrapperSelector: ".feed__slider",
     prev: ".feed__slider .slick-prev",
     next: ".feed__slider .slick-next",
     activeClass: "feed__item-active"
   });
   feedSlider.init();
-  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".showup .play", ".overlay").init();
-  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_2__["default"](".module__video-item .play", ".overlay").init(); // second page videoPopup
+  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_4__["default"](".showup .play", ".overlay").init();
+  new _modules_videoPopup__WEBPACK_IMPORTED_MODULE_4__["default"](".module__video-item .play", ".overlay").init(); // second page videoPopup
 
-  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"](".officerold", ".officer__card-item", ".plus").init();
-  new _modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"](".officernew", ".officer__card-item", ".plus").init();
-  var mainFromJoin = new _modules_form__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_5__["default"](".officerold", ".officer__card-item", ".plus").init();
+  new _modules_cards__WEBPACK_IMPORTED_MODULE_5__["default"](".officernew", ".officer__card-item", ".plus").init(); // new Accordion('.accordion-container');
+
+  var mainFromJoin = new _modules_form__WEBPACK_IMPORTED_MODULE_6__["default"]();
   mainFromJoin.init();
+  var w = 8;
+  var h = 11;
+
+  function matrix(h, w) {
+    var result = new Array(h).fill().map(function (ar) {
+      return new Array(w).fill(1);
+    });
+    console.log(result);
+    return result;
+  }
+
+  matrix(h, w);
 });
 
 /***/ }),

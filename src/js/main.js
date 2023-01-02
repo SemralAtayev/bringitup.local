@@ -3,6 +3,7 @@ import MiniSlider from "./modules/sliders/miniSlider";
 import VideoPopup from "./modules/videoPopup";
 import Cards from "./modules/cards";
 import Forms from "./modules/form";
+import Accordion from "accordion-js";
 
 window.addEventListener("DOMContentLoaded", () => {
   const slider = new MainSlider({
@@ -16,12 +17,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const secondPageBigSlider = new MainSlider({
     triggersSelector: ".sidecontrol .next",
     wrapperSelector: ".moduleapp",
-    prevOther: '.prevmodule',
-    nextOther: '.nextmodule',
+    prevOther: ".prevmodule",
+    nextOther: ".nextmodule",
   });
   secondPageBigSlider.render();
-
- 
 
   const showUpSlider = new MiniSlider({
     wrapperSelector: ".showup__content-slider",
@@ -50,17 +49,29 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   feedSlider.init();
 
-new VideoPopup(".showup .play", ".overlay").init();
-new VideoPopup(".module__video-item .play", ".overlay").init();
-
+  new VideoPopup(".showup .play", ".overlay").init();
+  new VideoPopup(".module__video-item .play", ".overlay").init();
 
   // second page videoPopup
-
- 
 
   new Cards(".officerold", ".officer__card-item", ".plus").init();
   new Cards(".officernew", ".officer__card-item", ".plus").init();
 
+  // new Accordion('.accordion-container');
+
   const mainFromJoin = new Forms();
   mainFromJoin.init();
+
+  const w = 8;
+  const h = 11;
+
+  function matrix(h, w) {
+    let result = new Array(h).fill().map(ar => {
+      return new Array(w).fill(1);
+    });
+    console.log(result);
+    return result;
+  }
+
+  matrix(h, w);
 });
